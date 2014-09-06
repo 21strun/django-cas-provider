@@ -65,7 +65,7 @@ def validate(request):
     ticket_string = request.GET.get('ticket', None)
     if service is not None and ticket_string is not None:
         try:
-            ticket = ServiceTicket.objects.get(ticket=ticket_string)
+            ticket = ServiceTicket.objects.get(ticket=ticket_string, service=service)
             username = ticket.user.username
             ticket.delete()
             return HttpResponse("yes\n%s\n" % username)
