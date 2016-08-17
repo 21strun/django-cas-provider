@@ -11,7 +11,8 @@ from utils import create_service_ticket
 
 __all__ = ['login', 'validate', 'logout']
 
-def login(request, template_name='cas/login.html', success_redirect=None ):
+def login(request, template_name='cas/login.html', success_redirect=None,
+          extra_condition_list=[]):
     if not success_redirect:
         success_redirect = settings.LOGIN_REDIRECT_URL
     if not success_redirect:
@@ -43,6 +44,9 @@ def login(request, template_name='cas/login.html', success_redirect=None ):
             if user is not None:
                 if user.is_active:
                     auth_login(request, user)
+                    for extra_condition, redirect_target in extra_condition_list:
+                        if extra_condition(request, user):
+                            return HttpResponseRedirect(redirect_target)
                     if service is not None:
                         ticket = create_service_ticket(user, service)
 
